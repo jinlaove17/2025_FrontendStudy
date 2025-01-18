@@ -3,13 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
 
+import { Link } from "react-router-dom";
 import { useState } from "react";
 
 import useUserStore from "@/stores/user";
 
 import { loginUser, logoutUser } from "@/api/user";
+import { getDramas } from "@/api/drama";
+
 import { User } from "../types";
 
 const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
@@ -23,15 +25,20 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     setUserInput({ ...userInput, [e.target.name]: e.target.value });
   };
 
-  const onSubmitLoginForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitLoginForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    loginUser(userInput);
+    await loginUser(userInput);
     setIsLoggedIn(true);
   };
 
   const onClickLogoutButton = () => {
     logoutUser();
     setIsLoggedIn(false);
+  };
+
+  const onClickLoadButton = async () => {
+    const dramas = await getDramas();
+    console.log(dramas);
   };
 
   return (
@@ -42,19 +49,28 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
       <Card className="w-[500px] mx-auto mt-10">
         <CardContent>
           {isLoggedIn ? (
-            <p className="text-center mt-6">
-              안녕하세요. 오늘도 좋은 하루 되세요.
-              <p className="text-sm text-gray-400">
+            <div>
+              <p className="text-center mt-6">
+                안녕하세요. 오늘도 좋은 하루 되세요.
+              </p>
+              <p className="text-sm text-center text-gray-400">
                 로그아웃을 하면 accessToken 쿠키가 삭제됩니다.
               </p>
               <Button
-                type="submit"
+                type="button"
+                className="w-full mt-3"
+                onClick={onClickLoadButton}
+              >
+                데이터 조회
+              </Button>
+              <Button
+                type="button"
                 className="w-full mt-3"
                 onClick={onClickLogoutButton}
               >
                 로그아웃
               </Button>
-            </p>
+            </div>
           ) : (
             <form
               className="p-6 md:p-8"
@@ -68,7 +84,12 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
                   </p>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="email">이메일</Label>
+                  <Label
+                    htmlFor="email"
+                    className="font-bold"
+                  >
+                    이메일
+                  </Label>
                   <Input
                     id="email"
                     name="email"
@@ -79,7 +100,12 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
-                    <Label htmlFor="password">비밀번호</Label>
+                    <Label
+                      htmlFor="password"
+                      className="font-bold"
+                    >
+                      비밀번호
+                    </Label>
                     <a
                       href="#"
                       className="ml-auto text-sm underline-offset-2 hover:underline"

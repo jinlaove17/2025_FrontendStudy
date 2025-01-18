@@ -15,5 +15,19 @@
       "password": "$2a$10$RcaUaNt/TWXj8cfk.vW4veF./2KWli27oaFXa9mATtRcDLk2P1mTG",
       "id": 3
     }
+  ],
+  "posts": [
+    {
+      "title": "나의 아저씨",
+      "characters": ["이지안", "박동훈"]
+    },
+    {
+      "title": "이태원클라쓰",
+      "characters": ["박새로이", "조이서"]
+    },
+    {
+      "title": "스토브리그",
+      "characters": ["백승수", "이세영"]
+    }
   ]
 }
