@@ -1,0 +1,19 @@
+{
+  "users": [
+    {
+      "email": "king@kk.com",
+      "password": "$2a$10$MMeYILg2Xle3bQqvTzM5F.udMwlYhO5D6SJTTuQVITKMYHHyhdEqO",
+      "id": 1
+    },
+    {
+      "email": "jongwoo@naver.com",
+      "password": "$2a$10$pG/l9VuqXWv1RbNZ2cz9IOxgWf7pLgTFadfo/7LlpTCfZ6K8MFP86",
+      "id": 2
+    },
+    {
+      "email": "jj@naver.com",
+      "password": "$2a$10$RcaUaNt/TWXj8cfk.vW4veF./2KWli27oaFXa9mATtRcDLk2P1mTG",
+      "id": 3
+    }
+  ]
+}
