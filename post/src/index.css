@@ -57,15 +57,27 @@ a {
 }
 
 button {
-  all: unset;
+  font: inherit;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: black;
+  color: white;
+  outline: none;
   cursor: pointer;
+  padding: 0.5rem 1rem;
+}
+
+button:hover {
+  background-color: #303030;
 }
 
 input,
 textarea,
-button,
 select {
   font: inherit;
-  border: none;
   outline: none;
+  background-color: white;
+  border: 0.1rem solid rgb(230, 230, 230);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
 }

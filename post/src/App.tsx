@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
+import Layout from "./components/common/Layout";
 import PostPage from "./pages/PostPage";
+import PostList from "./components/post/PostList";
+import PostDetail from "./components/post/PostDetail";
 
 const App = () => {
   return (
@@ -15,9 +17,18 @@ const App = () => {
             element={null}
           />
           <Route
-            path="/posts"
+            path="posts"
             element={<PostPage />}
-          />
+          >
+            <Route
+              index
+              element={<PostList />}
+            />
+            <Route
+              path=":id"
+              element={<PostDetail />}
+            />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

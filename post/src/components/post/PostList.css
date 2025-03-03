@@ -1,6 +1,29 @@
 .PostList {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+}
+
+.PostList .searchContainer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.PostList .searchContainer input[type="text"] {
+  flex: 1;
+}
+
+.PostList .searchContainer button {
+  min-width: 8rem;
+}
+
+.PostList .sortType {
+  align-self: end;
+}
+
+.PostList .table {
+  display: flex;
+  flex-direction: column;
   border-top: 0.3rem solid black;
   border-bottom: 0.2rem solid black;
   min-height: 372px;
@@ -31,8 +54,12 @@
   width: 10%;
 }
 
-.PostList .field-title,
+.PostList .field-title {
+  width: 50%;
+}
+
 .PostList .record-title {
+  text-align: start;
   width: 50%;
 }
 

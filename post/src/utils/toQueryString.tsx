@@ -3,7 +3,9 @@ const toQueryString = (
 ) => {
   return new URLSearchParams(
     Object.entries(queryParams).reduce((acc, [key, value]) => {
-      acc[key] = String(value);
+      if (value) {
+        acc[key] = String(value);
+      }
       return acc;
     }, {} as Record<string, string>)
   ).toString();

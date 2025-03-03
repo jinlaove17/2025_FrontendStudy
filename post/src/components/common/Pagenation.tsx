@@ -1,13 +1,12 @@
-import { Dispatch, SetStateAction } from "react";
 import "./Pagenation.css";
 import {
   PAGENATION_NAV_SIZE,
   PAGENATION_PAGE_SIZE,
-} from "../constants/pagenation";
+} from "../../constants/pagenation";
 
 interface PagenationProps {
   page: number;
-  setPage: Dispatch<SetStateAction<number>>;
+  setPage: (page: number) => void;
   totalCount: number;
 }
 
@@ -38,6 +37,7 @@ const Pagenation = ({ page, setPage, totalCount }: PagenationProps) => {
           { length: curRangeEndPage - curRangeStartPage + 1 },
           (_, index) => (
             <li
+              key={curRangeStartPage + index}
               className={`${
                 curRangeStartPage + index === page ? "active" : ""
               }`}
