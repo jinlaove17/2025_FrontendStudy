@@ -1,0 +1,25 @@
+.Footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  height: 10rem;
+  background-color: rgb(248, 248, 248);
+}
+
+.Footer ul {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 2rem;
+}
+
+.Footer ul > li {
+  font-weight: 700;
+}
+
+.Footer .copyright {
+  font-size: 1.4rem;
+  color: rgb(200, 200, 200);
+}
