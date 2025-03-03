@@ -3,6 +3,7 @@
   flex-direction: column;
   border-top: 0.3rem solid black;
   border-bottom: 0.2rem solid black;
+  min-height: 372px;
 }
 
 .PostList .field {

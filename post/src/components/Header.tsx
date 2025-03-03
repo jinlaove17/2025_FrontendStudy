@@ -15,7 +15,7 @@ const Header = () => {
         <ul>
           <li>
             <NavLink
-              className={({ isActive }) => (isActive ? "active" : "")}
+              className={({ isActive }) => (isActive ? "active" : undefined)}
               to="/posts"
             >
               자유 게시판

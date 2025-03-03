@@ -1,0 +1,24 @@
+.Pagenation {
+  display: flex;
+  justify-content: center;
+}
+
+.Pagenation ul {
+  display: flex;
+  gap: 1.4rem;
+}
+
+.Pagenation ul > li {
+  padding: 0.6rem;
+  font-weight: bold;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.Pagenation ul > li.active {
+  color: cornflowerblue;
+}
+
+.Pagenation ul > li:hover {
+  background-color: rgb(240, 240, 240);
+}
