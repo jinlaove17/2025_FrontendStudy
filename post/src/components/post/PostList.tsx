@@ -92,6 +92,7 @@ const PostList = () => {
         <input
           type="text"
           value={searchKeyword}
+          placeholder="검색어를 입력해 주세요."
           onChange={(e) => setSearchKeyword(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {

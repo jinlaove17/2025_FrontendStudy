@@ -1,3 +1,4 @@
+import { Post } from "../types/post";
 import toQueryString from "../utils/toQueryString";
 import apiClient from "./http";
 
@@ -13,4 +14,8 @@ export const getPosts = (queryParam: {
 
 export const getPost = (id: number) => {
   return apiClient.get(`/posts/${id}?_embed=comments`);
+};
+
+export const postIncreaseView = (updatedPost: Post) => {
+  return apiClient.patch(`/posts/${updatedPost.id}`, updatedPost);
 };
