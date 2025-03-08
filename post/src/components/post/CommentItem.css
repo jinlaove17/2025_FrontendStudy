@@ -1,0 +1,35 @@
+.CommentItem {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.CommentItem .comment {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: white;
+  border: 0.1rem solid #eeeeee;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.CommentItem .info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.CommentItem .author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.PostDetail .createdAt {
+  font-size: 1.2rem;
+  color: rgb(150, 150, 150);
+}
+
+.CommentItem .replies {
+  padding-left: 4rem;
+}

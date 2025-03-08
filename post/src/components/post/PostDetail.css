@@ -1,0 +1,56 @@
+.PostDetail {
+  border: 0.1rem solid #eeeeee;
+  border-radius: 1rem;
+  padding: 2rem;
+}
+
+.PostDetail .title {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding-bottom: 1rem;
+  border-bottom: 0.1rem solid #eeeeee;
+}
+
+.PostDetail .createdAt {
+  font-size: 1.2rem;
+  color: rgb(150, 150, 150);
+}
+
+.PostDetail .post-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.PostDetail .author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.PostDetail .view-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.PostDetail .view {
+  font-size: 1.4rem;
+}
+
+.PostDetail .content {
+  min-height: 20rem;
+  padding: 2rem;
+  border: 0.1rem solid #eeeeee;
+  border-radius: 0.6rem;
+  margin-bottom: 2rem;
+  white-space: pre-line;
+}
+
+.PostDetail .comment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

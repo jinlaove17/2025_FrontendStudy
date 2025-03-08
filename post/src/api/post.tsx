@@ -8,5 +8,9 @@ export const getPosts = (queryParam: {
   _page: number;
 }) => {
   const queryString = toQueryString(queryParam);
-  return apiClient.get(`/posts?${queryString}`);
+  return apiClient.get(`/posts?${queryString}&_embed=comments`);
+};
+
+export const getPost = (id: number) => {
+  return apiClient.get(`/posts/${id}?_embed=comments`);
 };
