@@ -47,31 +47,24 @@ class App {
   }
 
   private async setupModels() {
-    const geometryBox = new THREE.BoxGeometry(1);
     const material = new THREE.MeshStandardMaterial();
-    const box = new THREE.Mesh(geometryBox, material);
+    const geometryPatent = new THREE.BoxGeometry(2, 2, 2);
+    const parent = new THREE.Mesh(geometryPatent, material);
+    parent.position.y = 2;
+    parent.rotation.z = THREE.MathUtils.degToRad(45);
 
-    box.position.y = 2;
-    box.rotation.x = THREE.MathUtils.degToRad(45);
-    box.scale.set(0.5, 0.5, 0.5);
-
-    // 행렬로 구현해보기(적용 순서가 중요)
-    // const matrixS = new THREE.Matrix4().makeScale(0.5, 0.5, 0.5);
-    // const matrixR = new THREE.Matrix4().makeRotationX(
-    //   THREE.MathUtils.radToDeg(45)
-    // );
-    // const maxtrixT = new THREE.Matrix4().makeTranslation(0, 2, 0);
-    // box.applyMatrix4(matrixS);
-    // box.applyMatrix4(matrixR);
-    // box.applyMatrix4(maxtrixT);
-
-    this.scene.add(box);
+    const geometryChild = new THREE.BoxGeometry(1, 1, 1);
+    const child = new THREE.Mesh(geometryChild, material);
+    child.position.x = 3;
+    child.rotation.y = THREE.MathUtils.degToRad(45);
+    parent.add(child);
+    this.scene.add(parent);
 
     const axesOfScene = new THREE.AxesHelper(10);
     this.scene.add(axesOfScene);
 
-    const grid = new THREE.GridHelper(30, 30, 0xffffff, 0x444444);
-    this.scene.add(grid);
+    const axesOfParent = new THREE.AxesHelper(3);
+    parent.add(axesOfParent);
   }
 
   private setupEvents() {
