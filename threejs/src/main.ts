@@ -47,24 +47,61 @@ class App {
   }
 
   private async setupModels() {
-    const material = new THREE.MeshStandardMaterial();
-    const geometryPatent = new THREE.BoxGeometry(2, 2, 2);
-    const parent = new THREE.Mesh(geometryPatent, material);
-    parent.position.y = 2;
-    parent.rotation.z = THREE.MathUtils.degToRad(45);
+    // 좌표계 표시
+    const axisHelper = new THREE.AxesHelper(10);
+    this.scene.add(axisHelper);
 
-    const geometryChild = new THREE.BoxGeometry(1, 1, 1);
-    const child = new THREE.Mesh(geometryChild, material);
-    child.position.x = 3;
-    child.rotation.y = THREE.MathUtils.degToRad(45);
-    parent.add(child);
-    this.scene.add(parent);
+    // 바닥 평면
+    const geometryGround = new THREE.PlaneGeometry(5, 5);
+    const materialGround = new THREE.MeshStandardMaterial();
+    const ground = new THREE.Mesh(geometryGround, materialGround);
+    ground.rotation.x = -THREE.MathUtils.degToRad(90);
+    this.scene.add(ground);
 
-    const axesOfScene = new THREE.AxesHelper(10);
-    this.scene.add(axesOfScene);
+    // 반 구
+    const geometryBigSphere = new THREE.SphereGeometry(
+      1,
+      32,
+      16,
+      0,
+      THREE.MathUtils.degToRad(360),
+      0,
+      THREE.MathUtils.degToRad(90)
+    );
+    const materialBigSphere = new THREE.MeshStandardMaterial();
+    const bigSphere = new THREE.Mesh(geometryBigSphere, materialBigSphere);
+    this.scene.add(bigSphere);
 
-    const axesOfParent = new THREE.AxesHelper(3);
-    parent.add(axesOfParent);
+    // 작은 구
+    const geometrySmallSphere = new THREE.SphereGeometry(0.2);
+    const materialSmallSphere = new THREE.MeshStandardMaterial();
+    const smallSphere = new THREE.Mesh(
+      geometrySmallSphere,
+      materialSmallSphere
+    );
+
+    // 작은 구의 공전을 위한 피벗
+    const smallSpherePivot = new THREE.Object3D();
+    smallSphere.position.x = 2;
+    smallSpherePivot.add(smallSphere);
+    smallSpherePivot.rotation.y = THREE.MathUtils.degToRad(-45);
+    smallSpherePivot.position.y = 0.5;
+    smallSpherePivot.name = "smallSpherePivot";
+    bigSphere.add(smallSpherePivot);
+
+    // 도넛
+    const itemCount = 8;
+    const geometryTorus = new THREE.TorusGeometry(0.3, 0.1);
+    const materialTorus = new THREE.MeshStandardMaterial();
+    for (let i = 0; i < itemCount; i++) {
+      const torus = new THREE.Mesh(geometryTorus, materialTorus);
+      const torusPivot = new THREE.Object3D();
+      bigSphere.add(torusPivot);
+      torus.position.x = 2;
+      torusPivot.position.y = 0.5;
+      torusPivot.rotation.y = THREE.MathUtils.degToRad((360 / itemCount) * i);
+      torusPivot.add(torus);
+    }
   }
 
   private setupEvents() {
@@ -90,11 +127,18 @@ class App {
   private update(time: number) {
     time *= 0.001; // ms -> s
 
-    // const cube = this.scene.getObjectByName("myModel");
-    // if (cube) {
-    //   cube.rotation.x = time;
-    //   cube.rotation.y = time;
-    // }
+    const smallSpherePivot = this.scene.getObjectByName("smallSpherePivot");
+    if (smallSpherePivot) {
+      // Using Euler
+      // smallSpherePivot.rotation.y = 2 * time;
+
+      // Using quaternion
+      const euler = new THREE.Euler(0, 2 * time, 0);
+      smallSpherePivot.quaternion.setFromEuler(euler);
+
+      // const quaternion = new THREE.Quaternion().setFromEuler(euler);
+      // smallSpherePivot.setRotationFromQuaternion(quaternion);
+    }
   }
 
   private render(time: number) {
