@@ -1,12 +1,14 @@
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import "./style.css";
 import * as THREE from "three";
+import GUI from "three/examples/jsm/libs/lil-gui.module.min.js";
 
 class App {
   private renderer: THREE.WebGLRenderer;
   private domApp: Element;
   private scene: THREE.Scene;
   private camera?: THREE.PerspectiveCamera;
+
   constructor() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -29,21 +31,17 @@ class App {
     const height = this.domApp.clientHeight;
 
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100);
-    this.camera.position.z = 10;
+    this.camera.position.z = 2;
 
     new OrbitControls(this.camera, this.domApp as HTMLElement);
   }
 
   private setupLight() {
-    const lights = [];
-    for (let i = 0; i < 3; i++) {
-      lights[i] = new THREE.DirectionalLight(0xffffff, 3);
-      this.scene.add(lights[i]);
-    }
-
-    lights[0].position.set(0, 200, 0);
-    lights[1].position.set(100, 200, 100);
-    lights[2].position.set(-100, -200, -100);
+    const color = 0xffffff;
+    const intensity = 1;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-1, 2, 4);
+    this.scene.add(light);
   }
 
   private async setupModels() {
@@ -51,57 +49,23 @@ class App {
     const axisHelper = new THREE.AxesHelper(10);
     this.scene.add(axisHelper);
 
-    // 바닥 평면
-    const geometryGround = new THREE.PlaneGeometry(5, 5);
-    const materialGround = new THREE.MeshStandardMaterial();
-    const ground = new THREE.Mesh(geometryGround, materialGround);
-    ground.rotation.x = -THREE.MathUtils.degToRad(90);
-    this.scene.add(ground);
+    const geometry = new THREE.SphereGeometry();
+    geometry.deleteAttribute("uv");
 
-    // 반 구
-    const geometryBigSphere = new THREE.SphereGeometry(
-      1,
-      32,
-      16,
-      0,
-      THREE.MathUtils.degToRad(360),
-      0,
-      THREE.MathUtils.degToRad(90)
-    );
-    const materialBigSphere = new THREE.MeshStandardMaterial();
-    const bigSphere = new THREE.Mesh(geometryBigSphere, materialBigSphere);
-    this.scene.add(bigSphere);
+    const texture = new THREE.TextureLoader().load("./circle.png"); // 이미지 url을 이용해서 텍스처 객체 생성
+    const material = new THREE.PointsMaterial({
+      color: "green",
+      size: 0.1,
+      sizeAttenuation: true, // 카메라에서 가까울수록 크게 표현
+      map: texture,
+      alphaTest: 0.5, // 이미지 픽셀 값의 알파 값이 이 값을 넘어야 렌더링
+    });
+    material.color = new THREE.Color("yellow"); // 생성 후 색상 변경
+    const points = new THREE.Points(geometry, material);
+    this.scene.add(points);
 
-    // 작은 구
-    const geometrySmallSphere = new THREE.SphereGeometry(0.2);
-    const materialSmallSphere = new THREE.MeshStandardMaterial();
-    const smallSphere = new THREE.Mesh(
-      geometrySmallSphere,
-      materialSmallSphere
-    );
-
-    // 작은 구의 공전을 위한 피벗
-    const smallSpherePivot = new THREE.Object3D();
-    smallSphere.position.x = 2;
-    smallSpherePivot.add(smallSphere);
-    smallSpherePivot.rotation.y = THREE.MathUtils.degToRad(-45);
-    smallSpherePivot.position.y = 0.5;
-    smallSpherePivot.name = "smallSpherePivot";
-    bigSphere.add(smallSpherePivot);
-
-    // 도넛
-    const itemCount = 8;
-    const geometryTorus = new THREE.TorusGeometry(0.3, 0.1);
-    const materialTorus = new THREE.MeshStandardMaterial();
-    for (let i = 0; i < itemCount; i++) {
-      const torus = new THREE.Mesh(geometryTorus, materialTorus);
-      const torusPivot = new THREE.Object3D();
-      bigSphere.add(torusPivot);
-      torus.position.x = 2;
-      torusPivot.position.y = 0.5;
-      torusPivot.rotation.y = THREE.MathUtils.degToRad((360 / itemCount) * i);
-      torusPivot.add(torus);
-    }
+    const gui = new GUI();
+    gui.add(material, "size", 0.1, 10, 0.01);
   }
 
   private setupEvents() {
@@ -126,19 +90,6 @@ class App {
 
   private update(time: number) {
     time *= 0.001; // ms -> s
-
-    const smallSpherePivot = this.scene.getObjectByName("smallSpherePivot");
-    if (smallSpherePivot) {
-      // Using Euler
-      // smallSpherePivot.rotation.y = 2 * time;
-
-      // Using quaternion
-      const euler = new THREE.Euler(0, 2 * time, 0);
-      smallSpherePivot.quaternion.setFromEuler(euler);
-
-      // const quaternion = new THREE.Quaternion().setFromEuler(euler);
-      // smallSpherePivot.setRotationFromQuaternion(quaternion);
-    }
   }
 
   private render(time: number) {
