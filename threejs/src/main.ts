@@ -45,27 +45,28 @@ class App {
   }
 
   private async setupModels() {
-    // 좌표계 표시
-    const axisHelper = new THREE.AxesHelper(10);
-    this.scene.add(axisHelper);
+    const vertices = [-1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0];
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(vertices, 3)
+    );
 
-    const geometry = new THREE.SphereGeometry();
-    geometry.deleteAttribute("uv");
-
-    const texture = new THREE.TextureLoader().load("./circle.png"); // 이미지 url을 이용해서 텍스처 객체 생성
-    const material = new THREE.PointsMaterial({
-      color: "green",
-      size: 0.1,
-      sizeAttenuation: true, // 카메라에서 가까울수록 크게 표현
-      map: texture,
-      alphaTest: 0.5, // 이미지 픽셀 값의 알파 값이 이 값을 넘어야 렌더링
+    // const material = new THREE.LineBasicMaterial({
+    //   color: 0xffff00,
+    // });
+    const material = new THREE.LineDashedMaterial({
+      color: 0xffff00,
+      dashSize: 0.2,
+      gapSize: 0.1,
+      scale: 1,
     });
-    material.color = new THREE.Color("yellow"); // 생성 후 색상 변경
-    const points = new THREE.Points(geometry, material);
-    this.scene.add(points);
 
-    const gui = new GUI();
-    gui.add(material, "size", 0.1, 10, 0.01);
+    // const line = new THREE.Line(geometry, material);
+    // const line = new THREE.LineLoop(geometry, material);
+    const line = new THREE.LineSegments(geometry, material);
+    line.computeLineDistances();
+    this.scene.add(line);
   }
 
   private setupEvents() {
