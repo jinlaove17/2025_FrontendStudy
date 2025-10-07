@@ -1,7 +1,11 @@
-import { OrbitControls } from "three/examples/jsm/Addons.js";
+import {
+  OrbitControls,
+  RectAreaLightHelper,
+  RectAreaLightUniformsLib,
+  RGBELoader,
+} from "three/examples/jsm/Addons.js";
 import "./style.css";
 import * as THREE from "three";
-import GUI from "three/examples/jsm/libs/lil-gui.module.min.js";
 
 class App {
   private domApp: Element;
@@ -15,8 +19,8 @@ class App {
   // private light?: THREE.PointLight;
   // private lightHelper?: THREE.PointLightHelper;
 
-  private light?: THREE.SpotLight;
-  private lightHelper?: THREE.SpotLightHelper;
+  // private light?: THREE.SpotLight;
+  // private lightHelper?: THREE.SpotLightHelper;
 
   constructor() {
     this.domApp = document.querySelector("#app")!;
@@ -71,24 +75,42 @@ class App {
     // this.scene.add(helper);
 
     // 스팟 라이트
-    const light = new THREE.SpotLight(0xffffff, 20);
-    light.position.set(0, 5, 0);
-    light.target.position.set(0, 0, 0);
-    light.angle = THREE.MathUtils.degToRad(30);
-    light.penumbra = 0.5; // 가장자리에서 빛의 감쇄율
-    this.light = light;
-    this.scene.add(light);
-    this.scene.add(light.target);
+    // const light = new THREE.SpotLight(0xffffff, 20);
+    // light.position.set(0, 5, 0);
+    // light.target.position.set(0, 0, 0);
+    // light.angle = THREE.MathUtils.degToRad(30);
+    // light.penumbra = 0.5; // 가장자리에서 빛의 감쇄율
+    // this.light = light;
+    // this.scene.add(light);
+    // this.scene.add(light.target);
+    // const helper = new THREE.SpotLightHelper(light);
+    // this.lightHelper = helper;
+    // this.scene.add(helper);
+    // const gui = new GUI();
+    // gui
+    //   .add(light, "angle", 0, Math.PI / 2, 0.01)
+    //   .onChange(() => helper.update());
+    // gui.add(light, "penumbra", 0, 1, 0.01).onChange(() => helper.update());
 
-    const helper = new THREE.SpotLightHelper(light);
-    this.lightHelper = helper;
-    this.scene.add(helper);
+    // 랙트 라이트(형광등이나 창문에서 들어오는 빛)
+    // RectAreaLightUniformsLib.init(); // 초기화를 먼저 수행해야 함
+    // const light = new THREE.RectAreaLight(0xffffff, 10, 3, 0.5);
+    // light.position.set(0, 5, 0);
+    // light.rotation.x = THREE.MathUtils.degToRad(-90); // RectLight는 target이 아닌 각도로 지정
+    // this.scene.add(light);
 
-    const gui = new GUI();
-    gui
-      .add(light, "angle", 0, Math.PI / 2, 0.01)
-      .onChange(() => helper.update());
-    gui.add(light, "penumbra", 0, 1, 0.01).onChange(() => helper.update());
+    // const helper = new RectAreaLightHelper(light);
+    // this.scene.add(helper);
+
+    new RGBELoader().load("./rogland_clear_night_4k.hdr", (texture) => {
+      texture.mapping = THREE.EquirectangularRefractionMapping;
+      this.scene.environment = texture; // 광원 설정
+      this.scene.background = texture; // 배경 설정
+
+      // 광원의 세기 지정하기
+      this.renderer.toneMapping = THREE.AgXToneMapping;
+      this.renderer.toneMappingExposure = 1;
+    });
   }
 
   private setupModels() {
@@ -192,7 +214,7 @@ class App {
 
       //smallSpherePivot.quaternion.setFromEuler(euler);
 
-      const smallSphere = smallSpherePivot.children[0];
+      // const smallSphere = smallSpherePivot.children[0];
       // smallSphere.getWorldPosition(this.light!.target.position);
       // this.lightHelper?.update();
 
@@ -200,8 +222,8 @@ class App {
       // this.light!.position.y = 1;
       // this.lightHelper?.update();
 
-      smallSphere.getWorldPosition(this.light!.target.position);
-      this.lightHelper?.update();
+      // smallSphere.getWorldPosition(this.light!.target.position);
+      // this.lightHelper?.update();
     }
   }
 
