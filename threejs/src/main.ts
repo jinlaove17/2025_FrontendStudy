@@ -1,11 +1,10 @@
 import {
   OrbitControls,
   RGBELoader,
-  TechnicolorShader,
+  VertexNormalsHelper,
 } from "three/examples/jsm/Addons.js";
 import "./style.css";
 import * as THREE from "three";
-import GUI from "three/examples/jsm/libs/lil-gui.module.min.js";
 
 class App {
   private renderer: THREE.WebGLRenderer;
@@ -35,7 +34,7 @@ class App {
     const height = this.domApp.clientHeight;
 
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100);
-    this.camera.position.z = 2;
+    this.camera.position.z = 4;
 
     new OrbitControls(this.camera, this.domApp as HTMLElement);
   }
@@ -58,33 +57,51 @@ class App {
 
   private async setupModels() {
     const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load("./uv_grid_opengl.jpg");
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.repeat.x = 1;
-    texture.repeat.y = 1;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.offset.x = 0;
-    texture.offset.y = 0;
-    texture.rotation = THREE.MathUtils.degToRad(45);
-    texture.center.x = 0.5;
-    texture.center.y = 0.5;
-    texture.magFilter = THREE.LinearFilter;
-    texture.minFilter = THREE.NearestMipmapLinearFilter;
+    const mapBaseColor = textureLoader.load("./Glass_Window_002_basecolor.jpg");
+    mapBaseColor.colorSpace = THREE.SRGBColorSpace;
+
+    const mapAmbientOcclusion = textureLoader.load(
+      "./Glass_Window_002_ambientOcclusion.jpg"
+    );
+    const mapHeight = textureLoader.load("./Glass_Window_002_height.png");
+    const mapNormal = textureLoader.load("./Glass_Window_002_normal.jpg");
+    const mapRoughness = textureLoader.load("./Glass_Window_002_roughness.jpg");
+    const mapMetalic = textureLoader.load("./Glass_Window_002_metallic.jpg");
+    const mapAlpha = textureLoader.load("./Glass_Window_002_opacity.jpg");
 
     const material = new THREE.MeshStandardMaterial({
-      map: texture,
+      map: mapBaseColor,
+      aoMap: mapAmbientOcclusion,
+      aoMapIntensity: 1.5,
+      displacementMap: mapHeight,
+      displacementScale: 0.2,
+      displacementBias: -0.15,
+      normalMap: mapNormal,
+      normalScale: new THREE.Vector2(1, 1),
+      roughnessMap: mapRoughness,
+      roughness: 0.8,
+      metalnessMap: mapMetalic,
+      metalness: 0.9,
+      alphaMap: mapAlpha,
+      transparent: true,
+      side: THREE.DoubleSide,
     });
 
-    const geometryBox = new THREE.BoxGeometry(1, 1, 1);
+    const geometryBox = new THREE.BoxGeometry(1, 1, 1, 256, 256, 256);
     const box = new THREE.Mesh(geometryBox, material);
     box.position.x = -1;
     this.scene.add(box);
 
-    const geometrySphere = new THREE.SphereGeometry(0.6);
+    const geometrySphere = new THREE.SphereGeometry(0.6, 512, 256);
     const sphere = new THREE.Mesh(geometrySphere, material);
     sphere.position.x = 1;
     this.scene.add(sphere);
+
+    // const boxHelper = new VertexNormalsHelper(box, 0.1, 0xffff00);
+    // this.scene.add(boxHelper);
+
+    // const sphereHelper = new VertexNormalsHelper(sphere, 0.1, 0xffff00);
+    // this.scene.add(sphereHelper);
   }
 
   private setupEvents() {
