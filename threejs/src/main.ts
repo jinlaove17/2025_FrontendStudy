@@ -1,4 +1,8 @@
-import { OrbitControls, RGBELoader } from "three/examples/jsm/Addons.js";
+import {
+  OrbitControls,
+  RGBELoader,
+  TechnicolorShader,
+} from "three/examples/jsm/Addons.js";
 import "./style.css";
 import * as THREE from "three";
 import GUI from "three/examples/jsm/libs/lil-gui.module.min.js";
@@ -37,40 +41,50 @@ class App {
   }
 
   private setupLight() {
-    const color = 0xffffff;
-    const intensity = 1;
-    const light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(-1, 2, 4);
-    this.scene.add(light);
+    // const color = 0xffffff;
+    // const intensity = 1;
+    // const light = new THREE.DirectionalLight(color, intensity);
+    // light.position.set(-1, 2, 4);
+    // this.scene.add(light);
 
     /// HDRI
-    // const rgbeLoader = new RGBELoader();
-    // rgbeLoader.load("./qwantani_noon_puresky_4k.hdr", (envMap) => {
-    //   envMap.mapping = THREE.EquirectangularReflectionMapping;
-    //   this.scene.background = envMap;
-    //   this.scene.environment = envMap;
-    // });
+    const rgbeLoader = new RGBELoader();
+    rgbeLoader.load("./qwantani_noon_puresky_4k.hdr", (envMap) => {
+      envMap.mapping = THREE.EquirectangularReflectionMapping;
+      this.scene.background = envMap;
+      this.scene.environment = envMap;
+    });
   }
 
   private async setupModels() {
     const textureLoader = new THREE.TextureLoader();
-    const toonTexture = textureLoader.load("./toon.png");
-    toonTexture.minFilter = THREE.NearestFilter;
-    toonTexture.magFilter = THREE.NearestFilter;
+    const texture = textureLoader.load("./uv_grid_opengl.jpg");
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.repeat.x = 1;
+    texture.repeat.y = 1;
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.x = 0;
+    texture.offset.y = 0;
+    texture.rotation = THREE.MathUtils.degToRad(45);
+    texture.center.x = 0.5;
+    texture.center.y = 0.5;
+    texture.magFilter = THREE.LinearFilter;
+    texture.minFilter = THREE.NearestMipmapLinearFilter;
 
-    const material = new THREE.MeshToonMaterial({
-      gradientMap: toonTexture,
+    const material = new THREE.MeshStandardMaterial({
+      map: texture,
     });
 
-    const gemoetryCylinder = new THREE.CylinderGeometry(0.6, 0.9, 1.2, 64, 1);
-    const cylinder = new THREE.Mesh(gemoetryCylinder, material);
-    cylinder.position.x = -1;
-    this.scene.add(cylinder);
+    const geometryBox = new THREE.BoxGeometry(1, 1, 1);
+    const box = new THREE.Mesh(geometryBox, material);
+    box.position.x = -1;
+    this.scene.add(box);
 
-    const geometryTorusknot = new THREE.TorusKnotGeometry(0.4, 0.18, 128, 64);
-    const torusknot = new THREE.Mesh(geometryTorusknot, material);
-    torusknot.position.x = 1;
-    this.scene.add(torusknot);
+    const geometrySphere = new THREE.SphereGeometry(0.6);
+    const sphere = new THREE.Mesh(geometrySphere, material);
+    sphere.position.x = 1;
+    this.scene.add(sphere);
   }
 
   private setupEvents() {
