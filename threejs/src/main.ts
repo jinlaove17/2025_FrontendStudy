@@ -1,4 +1,4 @@
-import { OrbitControls } from "three/examples/jsm/Addons.js";
+import { OrbitControls, RGBELoader } from "three/examples/jsm/Addons.js";
 import "./style.css";
 import * as THREE from "three";
 
@@ -8,11 +8,21 @@ class App {
   private scene: THREE.Scene;
   private camera?: THREE.PerspectiveCamera;
 
+  // private light?: THREE.DirectionalLight;
+  // private lightHelper?: THREE.DirectionalLightHelper;
+
+  // private light?: THREE.PointLight;
+  // private lightHelper?: THREE.PointLightHelper;
+
+  private light?: THREE.SpotLight;
+  private lightHelper?: THREE.SpotLightHelper;
+
   constructor() {
     this.domApp = document.querySelector("#app")!;
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.shadowMap.enabled = true;
     this.domApp.appendChild(this.renderer.domElement);
     this.scene = new THREE.Scene();
 
@@ -29,13 +39,65 @@ class App {
 
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100);
     this.camera.position.set(2, 2, 3.5);
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-    // new OrbitControls(this.camera, this.domApp as HTMLElement);
+    new OrbitControls(this.camera, this.domApp as HTMLElement);
   }
 
   private setupLight() {
-    const light = new THREE.DirectionalLight(0xffffff, 1);
+    // Directional Light
+    // const light = new THREE.DirectionalLight(0xffffff, 5);
+    // light.position.set(0, 3, 0);
+    // light.target.position.set(0, 0, 0);
+    // light.castShadow = true;
+    // this.light = light;
+    // this.scene.add(light);
+    // // this.scene.add(light.target);
+
+    // const helper = new THREE.DirectionalLightHelper(light);
+    // this.lightHelper = helper;
+    // this.scene.add(helper);
+
+    // const cameraHelper = new THREE.CameraHelper(light.shadow.camera);
+    // light.shadow.camera.top = 5;
+    // light.shadow.camera.bottom = -5;
+    // light.shadow.camera.left = -5;
+    // light.shadow.camera.right = 5;
+    // light.shadow.camera.near = 0.5;
+    // light.shadow.camera.far = 500;
+    // light.shadow.mapSize.set(2048, 2048);
+    // light.shadow.radius = 4;
+    // this.scene.add(cameraHelper);
+
+    // Point Light
+    // const light = new THREE.PointLight(0xffffff, 5);
+    // light.castShadow = true;
+    // light.position.set(0, 5, 0);
+    // light.distance = 10;
+    // this.light = light;
+    // this.scene.add(light);
+
+    // const helper = new THREE.PointLightHelper(light);
+    // this.lightHelper = helper;
+    // this.scene.add(helper);
+
+    // Spot Light
+    const light = new THREE.SpotLight(0xffffff, 10);
+    light.position.set(0, 2.5, 0);
+    light.castShadow = true;
+    light.target.position.set(0, 0, 0);
+    light.angle = THREE.MathUtils.degToRad(30);
+    light.penumbra = 0.1;
+    this.light = light;
     this.scene.add(light);
+    // this.scene.add(light.target);
+
+    const helper = new THREE.SpotLightHelper(light);
+    this.lightHelper = helper;
+    this.scene.add(helper);
+
+    const cameraHelper = new THREE.CameraHelper(light.shadow.camera);
+    light.shadow.mapSize.set(2048, 2048);
+    light.shadow.radius = 4;
+    this.scene.add(cameraHelper);
   }
 
   private setupModels() {
@@ -52,25 +114,30 @@ class App {
     const ground = new THREE.Mesh(geomGround, matGround);
     ground.rotation.x = -THREE.MathUtils.degToRad(90);
     ground.position.y = -0.5;
+    ground.receiveShadow = true;
     this.scene.add(ground);
 
-    const geomBigSphere = new THREE.SphereGeometry(
-      1,
-      32,
-      16,
-      0,
-      THREE.MathUtils.degToRad(360),
-      0,
-      THREE.MathUtils.degToRad(90)
-    );
+    // const geomBigSphere = new THREE.SphereGeometry(
+    //   1,
+    //   32,
+    //   16,
+    //   0,
+    //   THREE.MathUtils.degToRad(360),
+    //   0,
+    //   THREE.MathUtils.degToRad(90)
+    // );
+    const geomBigTorusKnot = new THREE.TorusKnotGeometry(0.55, 0.15, 128, 64);
+    geomBigTorusKnot.translate(0, 1, 0);
     const matBigSphere = new THREE.MeshStandardMaterial({
       color: "#ffffff",
       roughness: 0.1,
       metalness: 0.2,
     });
-    const bigSphere = new THREE.Mesh(geomBigSphere, matBigSphere);
-    bigSphere.position.y = -0.5;
-    this.scene.add(bigSphere);
+    const bigTorusKnot = new THREE.Mesh(geomBigTorusKnot, matBigSphere);
+    bigTorusKnot.position.y = -0.5;
+    bigTorusKnot.receiveShadow = true;
+    bigTorusKnot.castShadow = true;
+    this.scene.add(bigTorusKnot);
 
     const geomSmallSphere = new THREE.SphereGeometry(0.2);
     const matSmallSphere = new THREE.MeshStandardMaterial({
@@ -82,8 +149,10 @@ class App {
 
     const smallSpherePivot = new THREE.Object3D();
     smallSpherePivot.add(smallSphere);
-    bigSphere.add(smallSpherePivot);
+    bigTorusKnot.add(smallSpherePivot);
     smallSphere.position.x = 2;
+    smallSphere.receiveShadow = true;
+    smallSphere.castShadow = true;
     smallSpherePivot.rotation.y = THREE.MathUtils.degToRad(-45);
     smallSpherePivot.position.y = 0.5;
     smallSpherePivot.name = "smallSpherePivot";
@@ -92,7 +161,7 @@ class App {
     const smallSphere2 = new THREE.Object3D();
     const smallSpherePivot2 = new THREE.Object3D();
     smallSpherePivot2.add(smallSphere2);
-    bigSphere.add(smallSpherePivot2);
+    bigTorusKnot.add(smallSpherePivot2);
     smallSphere2.position.x = 2;
     smallSpherePivot2.rotation.y = THREE.MathUtils.degToRad(-45);
     smallSpherePivot2.position.y = 0.5;
@@ -109,8 +178,10 @@ class App {
       const torus = new THREE.Mesh(geomTorus, matTorus);
       const torusPivot = new THREE.Object3D();
 
-      bigSphere.add(torusPivot);
+      bigTorusKnot.add(torusPivot);
       torus.position.x = 2;
+      torus.receiveShadow = true;
+      torus.castShadow = true;
       torusPivot.position.y = 0.5;
       torusPivot.rotation.y = (THREE.MathUtils.degToRad(360) / cntItems) * i;
       torusPivot.add(torus);
@@ -154,25 +225,15 @@ class App {
       const smallSpherePos = new THREE.Vector3();
       smallSphere.getWorldPosition(smallSpherePos);
 
-      // 카메라가 공을 포커스하게 만들기
-      // this.camera?.lookAt(smallSpherePos);
-
-      // 공 시점으로 카메라 배치하기
-      const smallSpherePivot2 = this.scene.getObjectByName("targetPivot");
-      if (smallSpherePivot2) {
-        const euler2 = new THREE.Euler(
-          0,
-          time + THREE.MathUtils.degToRad(10),
-          0
-        );
-        const quaterinon2 = new THREE.Quaternion().setFromEuler(euler2);
-        smallSpherePivot2.setRotationFromQuaternion(quaterinon2);
-
-        const nextPos = smallSpherePivot2.children[0];
-        const cameraTarget = new THREE.Vector3();
-        nextPos.getWorldPosition(cameraTarget);
-        this.camera?.lookAt(cameraTarget);
-        this.camera?.position.copy(smallSpherePos);
+      if (this.light! instanceof THREE.DirectionalLight) {
+        smallSphere.getWorldPosition(this.light!.target.position);
+        this.lightHelper!.update();
+      } else if (this.light! instanceof THREE.PointLight) {
+        smallSphere.getWorldPosition(this.light!.position);
+        this.lightHelper!.update();
+      } else if (this.light! instanceof THREE.SpotLight) {
+        smallSphere.getWorldPosition(this.light!.target.position);
+        this.lightHelper!.update();
       }
     }
   }
